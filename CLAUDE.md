@@ -1,108 +1,166 @@
 # CLAUDE.md — Métodos en Mutación
 
-Contexto de proyecto para Claude Code. Este archivo describe el TFG, la arquitectura decidida y las convenciones de trabajo. Leerlo al inicio de cada sesión.
+Documento de contexto persistente para sesiones de Claude (cualquier modelo, cualquier interfaz) trabajando en este repo. Léelo entero al arrancar cualquier sesión nueva.
 
----
+## 1. Identidad del proyecto
 
-## El proyecto
+Plataforma web "Métodos en Mutación", componente práctico del Trabajo de Fin de Grado (TFG) en Diseño de Moda de Pau Rubio Sánchez, BAU Centre Universitari de Disseny de Barcelona, curso 2025-2026.
 
-**TFG:** "Devenir TFG es una cartografía de un territorio en mutación"  
-**Autora:** Pau Rubio Sánchez  
-**Centro:** BAU Centre Universitari de Disseny de Barcelona  
-**Grado:** Diseño de Moda, 4.º curso  
-**Plazo:** Entrega aproximada junio 2026
+El proyecto del TFG opera en tres registros articulados:
+- Laboratorio: donde se desarrollan los métodos técnicos.
+- Colección: 6 looks finales como prueba tangible.
+- Plataforma "Métodos en Mutación": esta web, que escala los métodos al conjunto de quienes habitan la moda.
 
-El TFG opera en tres registros:
+Marco teórico: Mil mesetas (Deleuze/Guattari, 1980), Las tres ecologías (Guattari, 1989), tradición de cultura libre (Stallman, Lessig, Kleiner).
 
-1. **Laboratorio** — métodos técnicos de moda documentados
-2. **Colección** — 6 looks finales como prueba tangible de los métodos
-3. **Plataforma web "Métodos en Mutación"** — escala la lógica del laboratorio a una infraestructura colectiva abierta
+Estética declarada: archivo editorial sobrio, blanco y negro, anti-marca, declarado como prototipo "v0.1 — en mutación".
 
-**Marco teórico:** *Mil mesetas* (Deleuze y Guattari, 1980), *Las tres ecologías* (Guattari, 1989), y la tradición de cultura libre y comunes digitales (Stallman, Lessig, Kleiner).
+Plazo de entrega: aproximadamente junio 2026.
 
----
+## 2. Acuerdo de trabajo
 
-## Licencia
+- El usuario (Pau) decide arquitectura, contenido y dirección del proyecto.
+- Claude ejecuta trabajo técnico vía Claude Code en la terminal.
+- Todo commit pasa por aprobación explícita del usuario antes de ejecutarse.
+- Tono: tribunal-rigor, honestidad sin maquillar, decisiones declaradas no escondidas.
+- Nivel técnico del usuario: cero. Respuestas y acciones en pasos numerados claros, con bloques copy-paste cuando hay algo que pegar.
+- Trabajo en paralelo: programación de la plataforma + escritura asistida de las secciones (15) y (16) de la memoria del TFG.
 
-**Creative Commons BY-SA 4.0** — ya cargada como `LICENSE` en el repo.  
-Es constitutiva y no negociable. Toda la plataforma y sus contenidos operan bajo este régimen.
+## 3. Stack técnico verificado
 
----
+- Astro 6.3.1 (framework SSG).
+- Node 22 (pinneado en .nvmrc).
+- TypeScript strict.
+- Markdown para todo el contenido.
+- Netlify para hosting (auto-deploy on push a main).
+- GitHub: github.com/metodosenmutacion/metodosenmutacion.
+- URL pública: metodosenmutacion.netlify.app.
+- Licencia: CC BY-SA 4.0 (en archivo LICENSE del repo).
+- Asistencia editorial: Claude (Anthropic), declarada en apéndice B del TFG y en la web pública.
 
-## Arquitectura técnica
+Dominio propio (metodosenmutacion.org) no registrado; decisión pospuesta para post-entrega.
 
-- **Generador:** Astro (sitio estático)
-- **Contenido:** archivos Markdown por cada entrada (métodos, resultados, looks)
-- **Trazabilidad y genealogía:** historial Git público
-- **Hospedaje:** Netlify (previsto)
-- **Dominio:** metodosenmutacion.org (futuro)
-- **Idioma por defecto:** castellano; catalán disponible. Las entradas respetan la lengua original de cada autora, sin traducciones automáticas.
+## 4. Decisión arquitectónica de fondo: Git como fuente de verdad
 
----
+NO HAY BASE DE DATOS. El contenido vive como archivos Markdown en el propio repo, dentro de /content/. Astro los lee al construir el sitio. Las submissions desde la web crean commits vía Netlify Functions con token de GitHub.
 
-## Política de admisión — tres capas
+Implicaciones operativas:
+- Cada entrada es una carpeta con .md más archivos adjuntos (imágenes, PDFs).
+- Toda modificación queda registrada en el historial de Git con hash, mensaje y momento.
+- Los forks son forks literales del repo en GitHub.
+- Cero costes recurrentes (todo gratis en los planes free de GitHub y Netlify).
 
-| Capa | Descripción | Moderación |
-|------|-------------|------------|
-| 1 — Propuestas | Toda contribución externa inscrita públicamente desde el envío, con autoría y fecha | Sin moderación |
-| 2 — Archivo curado | Entradas que cumplen los cinco criterios técnicos; catálogo principal navegable | Criterios técnicos |
-| 3 — Forks | Cualquiera puede tomar el archivo entero y montar el suyo bajo CC BY-SA | Sin moderación |
+## 5. Tipos de entrada
 
-Sobre el archivo curado opera una **capa editorial no excluyente**: decide qué se ilumina (portada, destacados) sin condicionar qué existe.
+### 5.1 Método (tipo canónico)
 
-### Los cinco criterios de admisión al archivo curado
+Único tipo de entrada que aparece en la cartografía principal y se somete a curación por los cinco criterios.
 
-1. La entrada debe ser un método, un resultado vinculado a método(s), o un look vinculado a resultado(s) y/o método(s).
-2. Debe inscribirse en al menos un territorio existencial de la taxonomía declarada. La taxonomía es ampliable por propuesta argumentada.
-3. Debe declarar autoría con email verificado y aceptar CC BY-SA mediante advertencia explícita en el formulario.
-4. Las derivaciones declaradas (internas o de referentes externos) deben estar correctamente referenciadas.
-5. No debe duplicar una entrada existente.
+Campos:
+- titulo (string): nombre del método.
+- slug (auto-generado del título): identificador URL.
+- autoria (lista de strings): personas que firman, puede ser colaborativo.
+- territorios (multi-select del listado cerrado, ver sección 7 de este documento).
+- derivado_de (multi-valor, sistema unificado): cada valor es uno de tres tipos:
+  · Slug de otra entrada del archivo (link interno).
+  · Nombre de un referente externo (genera nodo agregador bajo /referentes/).
+  · "ninguno" (declara originalidad explícita).
+- fecha_envio (auto, timestamp del commit).
+- licencia (siempre CC BY-SA 4.0).
+- documentacion (lista de archivos adjuntos: JPG, PNG, PDF). OBLIGATORIA. Al menos un archivo requerido. Sin documentación, una submission no se acepta. Razón: sin documentación visual el método no es reproducible.
+- cuerpo (Markdown): descripción narrativa del método.
 
----
+Cada método vive en /content/methods/[slug]/ como carpeta, con method.md más sus archivos adjuntos.
 
-## Taxonomía — territorios existenciales
+### 5.2 Aplicación (tipo secundario)
 
-~36 conceptos que operan como rúbrica de análisis y como infraestructura de búsqueda. Lista completa en la memoria del TFG (sección 9):
+Vive dentro de cada método como contribución externa de cualquier usuario verificado por email. No aparece en la cartografía principal; aparece dentro de la entrada del método al que aplica y en la galería secundaria /aplicaciones/.
 
-LINEUP, CODIGOS, MATERIALES, EXTERIORES, HILO, PLANO, RELLENO, FOTOS, CUERPO, ARREGLO, CEÑIDO, IDENTIDAD, PATRONAJE, PRENDA, COSTURA, FORRO, FORNITURAS, BIES, CONCEPTO, PRECIOS, PERCHA, AJUSTE, COMODIDAD, PROTOTIPOS, SKETCH, COLOR, ACABADOS, EDITORIAL, PUNTO, CORTE, DISEÑO, TIENDA, PARCHE, HOLGURA, ESTETICA, INTEMPERIE
+Campos:
+- metodo_padre (slug obligatorio del método al que aplica).
+- imagen (obligatoria).
+- autoria (verificada por email).
+- fecha (auto).
+- descripcion (opcional, breve).
 
----
+Estructura de carpetas a definir al programar (probablemente /content/methods/[slug]/applications/ o /content/applications/ con referencia al padre).
 
-## Pantallas previstas
+## 6. Política de admisión
 
-- Inicio (con cartografía rizomática como portada)
-- Catálogo curado con filtros
-- Ficha de método
-- Ficha de resultado
-- Ficha de look
-- Perfil de autora
-- Cartografía rizomática general
-- Capa de propuestas
-- Formulario de envío
-- Sobre el proyecto
+Tres capas:
+- Propuestas: públicas desde el momento del envío. Viven en /content/proposals/ antes de pasar a curación.
+- Archivo curado: métodos que han pasado los cinco criterios. Viven en /content/methods/.
+- Forks: forks literales del repo en GitHub, fuera del control de la plataforma.
 
----
+Cinco criterios técnicos para que un método pase de propuesta a archivo curado:
+1. Es del tipo método (no otra cosa).
+2. Declara al menos un territorio existencial.
+3. Tiene email verificado.
+4. Acepta licencia CC BY-SA 4.0.
+5. No duplica un método ya existente en el archivo.
 
-## Estética
+Aplicaciones: solo verificación de email, sin curación adicional. Las aplicaciones son contribuciones ligeras cuyo valor está en cantidad y diversidad.
 
-- Archivo abierto, sobrio y editorial
-- Blanco y negro
-- Tipografía con carácter
-- Referencias: MIT Press, e-flux, Monoskop, archivos de bibliotecas independientes
-- Anti-marca, anti-startup
-- Marca de versión en pie de página: **"v0.1 — en mutación"**
+Capa editorial: existe pero no se documenta aquí. Opera sobre el archivo curado decidiendo qué se ilumina, no qué existe.
 
----
+## 7. Territorios existenciales (listado cerrado, 36)
 
-## Declaración de asistencia con IA
+Sacados de la sección 9 del TFG. Son la taxonomía operativa del archivo, usados como rúbrica de admisión y como filtro principal en la cartografía.
 
-El proyecto declara públicamente, como parte del régimen de trazabilidad, que la construcción de la plataforma se hace con asistencia de **Claude (Anthropic)**. Esta declaración aparecerá en la página "Sobre el proyecto" y en el README del repositorio.
+LINEUP, PATRONAJE, SKETCH, CODIGOS, PRENDA, COLOR, MATERIALES, COSTURA, ACABADOS, EXTERIORES, FORRO, EDITORIAL, HILO, FORNITURAS, PUNTO, PLANO, BIES, CORTE, RELLENO, CONCEPTO, DISEÑO, FOTOS, PRECIOS, TIENDA, CUERPO, PERCHA, PARCHE, ARREGLO, AJUSTE, HOLGURA, CEÑIDO, COMODIDAD, ESTETICA, IDENTIDAD, PROTOTIPOS, INTEMPERIE.
 
----
+## 8. Sitemap (11 URLs)
 
-## Nivel técnico de la autora y modo de trabajo
+URLs en castellano. Contenido de cada método en su idioma original (es o cat).
 
-- Nivel técnico: cero
-- Claude hace la mayoría del trabajo técnico
-- Pau decide, aprueba, redacta los textos del archivo, carga los métodos y firma los commits
-- Guía paso a paso cuando sea necesario
+- / — Cartografía rizomática principal (mapa de métodos más filtros por territorios).
+- /metodos/ — Lista editorial de todos los métodos.
+- /metodos/[slug]/ — Ficha completa de un método (incluye galería de aplicaciones al final).
+- /aplicaciones/ — Galería visual secundaria de todas las aplicaciones.
+- /territorios/ — Índice de los 36 territorios con descripción y contador.
+- /territorios/[slug]/ — Página agregadora de un territorio.
+- /referentes/ — Índice de autores externos citados por algún método.
+- /referentes/[slug]/ — Página agregadora de un referente.
+- /propuestas/ — Cola pública de propuestas pendientes de curación.
+- /enviar/ — Formulario de submission de nuevo método.
+- /sobre-el-proyecto/ — About anonimizado (ver sección 11).
+
+## 9. Cartografía (home)
+
+Visualización principal del sitio:
+- Nodos = métodos del archivo.
+- Conexiones = relaciones derivado_de (método-a-método o método-a-referente).
+- Métodos originales (derivado_de: ninguno) aparecen sin conexiones, como islas.
+- Métodos derivados de referentes externos aparecen visualmente intercalados con el resto, no agrupados en un rincón, para equilibrio estético del mapa. Estructuralmente sus referentes viven todos bajo /referentes/.
+- Filtros: chips multi-select de los 36 territorios encima del mapa.
+
+Implementación técnica pendiente. Candidatos a evaluar: d3, vis.js, react-flow, o construcción custom con SVG.
+
+## 10. Integración memoria-plataforma
+
+La sección (17) del TFG "Fichas técnicas de los 6 looks" se reformula: deja de ser técnica-de-confección y pasa a ser ficha-de-genealogía. Cada ficha técnica de un look se materializa como la entrada en la plataforma del método del que ese look emergió. La documentación obligatoria de ese método incluye el desarrollo del look y sus imágenes.
+
+Las secciones (15) "Desarrollo técnico de la plataforma" y (16) "Interfaz y funcionamiento de la plataforma" documentan esta plataforma desde la memoria. Se escriben en paralelo a la programación, en la voz del autor, con asistencia editorial declarada en el apéndice B.
+
+## 11. Anonimización pública
+
+Web pública /sobre-el-proyecto/: anonimizada. Menciona el TFG del que nace (BAU Centre Universitari de Disseny de Barcelona) y la infraestructura técnica (Astro, Netlify, GitHub, Anthropic como asistencia editorial), pero no nombres propios. Las co-autorías específicas (por ejemplo, el look CC BY-SA con Martina Ferrer y Martina Monedero) aparecen en el campo autoria de la entrada correspondiente del método, no en el about.
+
+LICENSE: mantiene el nombre del autor por requisito legal de las licencias Creative Commons (necesitan licenciador identificable para ser operativas).
+
+README: minimalista, coherente con el about público.
+
+## 12. Decisiones pendientes / open items
+
+- Nombre final oficial de la plataforma (actualmente "Métodos en Mutación").
+- Sistema visual: tipografía, paleta exacta dentro del B&W declarado, rejilla, espaciado, jerarquía.
+- Servicio de email para verificación de submissions (candidatos: Resend, Postmark, otros con plan free).
+- Librería para la cartografía interactiva.
+- Detalle de la capa editorial (cómo se gestiona internamente la promoción de propuesta a archivo).
+
+## 13. Historial de hitos cerrados
+
+- 2026-05-12: Repo creado en GitHub. LICENSE CC BY-SA 4.0 committeado.
+- 2026-05-13: Astro 6.3.1 instalado, Node 22 pinneado en .nvmrc, Netlify conectado, sitio desplegado en metodosenmutacion.netlify.app, pipeline edit-commit-push-deploy verificado end-to-end.
+- 2026-05-14: .DS_Store añadido al .gitignore. Placeholder "Astro" reemplazado por "Métodos en Mutación · v0.1" como primera prueba viva del pipeline.
+- 2026-05-20: Arquitectura abstracta completa cerrada y consolidada en este documento.
