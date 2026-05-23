@@ -103,11 +103,11 @@ Aplicaciones: solo verificación de email, sin curación adicional. Las aplicaci
 
 Capa editorial: existe pero no se documenta aquí. Opera sobre el archivo curado decidiendo qué se ilumina, no qué existe.
 
-## 7. Territorios existenciales (listado cerrado, 36)
+## 7. Territorios existenciales (listado cerrado, 37)
 
 Sacados de la sección 9 del TFG. Son la taxonomía operativa del archivo, usados como rúbrica de admisión y como filtro principal en la cartografía.
 
-LINEUP, PATRONAJE, SKETCH, CODIGOS, PRENDA, COLOR, MATERIALES, COSTURA, ACABADOS, EXTERIORES, FORRO, EDITORIAL, HILO, FORNITURAS, PUNTO, PLANO, BIES, CORTE, RELLENO, CONCEPTO, DISEÑO, FOTOS, PRECIOS, TIENDA, CUERPO, PERCHA, PARCHE, ARREGLO, AJUSTE, HOLGURA, CEÑIDO, COMODIDAD, ESTETICA, IDENTIDAD, PROTOTIPOS, INTEMPERIE.
+LINEUP, PATRONAJE, SKETCH, CODIGOS, PRENDA, COLOR, MATERIALES, COSTURA, ACABADOS, EXTERIORES, FORRO, EDITORIAL, HILO, FORNITURAS, PUNTO, PLANO, BIES, CORTE, RELLENO, CONCEPTO, DISEÑO, FOTOS, PRECIOS, TIENDA, CUERPO, PERCHA, PARCHE, ARREGLO, AJUSTE, HOLGURA, CEÑIDO, COMODIDAD, ESTETICA, IDENTIDAD, PROTOTIPOS, INTEMPERIE, COMÚN.
 
 ## 8. Sitemap (11 URLs)
 
@@ -157,6 +157,7 @@ README: minimalista, coherente con el about público.
 - Servicio de email para verificación de submissions (candidatos: Resend, Postmark, otros con plan free).
 - Librería para la cartografía interactiva.
 - Detalle de la capa editorial (cómo se gestiona internamente la promoción de propuesta a archivo).
+- Implementar enlace al historial de Git en cada ficha de método, para que cualquier visitante pueda ver versiones anteriores y diffs de cualquier entrada (transparencia editorial radical apoyada en versionado nativo de Git).
 
 ## 13. Historial de hitos cerrados
 
@@ -164,3 +165,4 @@ README: minimalista, coherente con el about público.
 - 2026-05-13: Astro 6.3.1 instalado, Node 22 pinneado en .nvmrc, Netlify conectado, sitio desplegado en metodosenmutacion.netlify.app, pipeline edit-commit-push-deploy verificado end-to-end.
 - 2026-05-14: .DS_Store añadido al .gitignore. Placeholder "Astro" reemplazado por "Métodos en Mutación · v0.1" como primera prueba viva del pipeline.
 - 2026-05-20: Arquitectura abstracta completa cerrada y consolidada en este documento.
+- 2026-05-21: Primer método añadido al archivo (Método del Agenciamiento Colectivo). Territorio COMÚN creado como 37º del listado cerrado, marcando la singularidad estructural del método fundacional.
