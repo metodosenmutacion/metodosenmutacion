@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const allMethods = await getCollection('methods');
+
+const methods = allMethods.sort(
+  (a, b) => b.data.fecha_envio.getTime() - a.data.fecha_envio.getTime()
+);
+---
+<Layout title="Métodos · Métodos en Mutación">
+  <h1>Métodos</h1>
+  <main>
+    {methods.length === 0
+      ? <p>Aún no hay métodos en el archivo.</p>
+      : methods.map(method => {
+          const slug = method.id.split('/')[0];
+          const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          return (
+            <article>
+              <h2><a href={`/metodos/${slug}/`}>{method.data.titulo}</a></h2>
+              <p>Autoría: {method.data.autoria.join(', ')}</p>
+              <p>Territorios: {method.data.territorios.join(', ')}</p>
+              <p>Fecha: {fecha}</p>
+            </article>
+          );
+        })
+    }
+  </main>
+</Layout>
