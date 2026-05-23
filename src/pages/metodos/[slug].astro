@@ -1,0 +1,84 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const methods = await getCollection('methods');
+  return methods.map(method => ({
+    params: { slug: method.id.split('/')[0] },
+    props: { method },
+  }));
+}
+
+const { method } = Astro.props;
+const slug = Astro.params.slug;
+const { Content } = await render(method);
+
+// Vite resolves each asset to its content-hashed URL in the build output.
+// query:'?url' + import:'default' is the Vite 4+ pattern for URL-only imports.
+// Files must live in src/ for this to work; public/ would need a plain string path instead.
+const allDocAssets = import.meta.glob<string>(
+  '/src/content/methods/**/*.{jpg,jpeg,png,pdf}',
+  { query: '?url', import: 'default', eager: true }
+);
+
+const docLinks = method.data.documentacion.map(filename => ({
+  filename,
+  url: allDocAssets[`/src/content/methods/${slug}/${filename}`] ?? null,
+}));
+
+const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+<Layout title={`${method.data.titulo} · Métodos en Mutación`}>
+  <main>
+    <h1>{method.data.titulo}</h1>
+
+    <dl>
+      <dt>Autoría</dt>
+      <dd>{method.data.autoria.join(', ')}</dd>
+
+      <dt>Territorios</dt>
+      <dd>{method.data.territorios.join(', ')}</dd>
+
+      <dt>Derivado de</dt>
+      <dd>
+        {method.data.derivado_de.length === 0
+          ? 'Original — sin derivaciones'
+          : method.data.derivado_de.map(item =>
+              item.tipo === 'interno'
+                ? `Método interno: ${item.slug}`
+                : `Referente externo: ${item.nombre}`
+            ).join('; ')
+        }
+      </dd>
+
+      <dt>Fecha de envío</dt>
+      <dd>{fecha}</dd>
+
+      <dt>Licencia</dt>
+      <dd>{method.data.licencia}</dd>
+    </dl>
+
+    <section>
+      <Content />
+    </section>
+
+    <section>
+      <h2>Documentación</h2>
+      <ul>
+        {docLinks.map(({ filename, url }) => (
+          <li>
+            {url
+              ? <a href={url} download={filename}>{filename}</a>
+              : <span>{filename} (no disponible)</span>
+            }
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
