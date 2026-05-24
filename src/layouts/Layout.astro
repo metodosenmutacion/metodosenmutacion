@@ -1,4 +1,5 @@
 ---
+import '../styles/global.css';
 interface Props {
   title?: string;
 }
@@ -9,18 +10,34 @@ const { title = 'Métodos en Mutación' } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <title>{title}</title>
   </head>
   <body>
-    <header>
-      <nav>
-        <a href="/">Métodos en Mutación</a>
-        <ul>
-          <li><a href="/metodos/">Métodos</a></li>
-          <li><a href="/sobre-el-proyecto/">Sobre el proyecto</a></li>
-        </ul>
-      </nav>
+    <header class="site-header">
+      <div class="container">
+        <a href="/" class="site-title">Métodos en Mutación</a>
+        <nav class="site-nav">
+          <a href="/">Inicio</a>
+          <a href="/metodos/">Métodos</a>
+          <a href="/aplicaciones/">Galería</a>
+          <a href="/buscar/">Buscar</a>
+          <a href="/enviar/">Subir</a>
+          <a href="/sobre-el-proyecto/">Sobre el proyecto</a>
+        </nav>
+      </div>
     </header>
-    <slot />
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>Métodos en Mutación · v0.1 — en mutación · CC BY-SA 4.0</p>
+      </div>
+    </footer>
   </body>
 </html>

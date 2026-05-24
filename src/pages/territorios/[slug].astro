@@ -19,8 +19,7 @@ const methods = allMethods
   .sort((a, b) => b.data.fecha_envio.getTime() - a.data.fecha_envio.getTime());
 ---
 <Layout title={`${territorio} · Territorios · Métodos en Mutación`}>
-  <main>
-    <h1>{territorio}</h1>
+  <h1>{territorio}</h1>
     {methods.length === 0
       ? <p>Ningún método declara este territorio todavía.</p>
       : <ul>
@@ -41,5 +40,4 @@ const methods = allMethods
           })}
         </ul>
     }
-  </main>
 </Layout>

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="Sobre el proyecto · Métodos en Mutación">
-  <main>
+  <article class="measure">
     <h1>Sobre el proyecto</h1>
 
     <p>Métodos en Mutación es un archivo abierto de métodos de creación en moda. Funciona como un común: cualquiera puede leer su contenido, descargar la documentación, subir métodos propios y contribuir aplicaciones de los existentes.</p>
@@ -30,5 +30,10 @@ import Layout from '../layouts/Layout.astro';
     <h2>Infraestructura</h2>
 
     <p>Plataforma construida con Astro (framework de código abierto), alojada en Netlify, con su código fuente en GitHub. Desarrollada con asistencia editorial de Claude (Anthropic), declarada como parte de la trazabilidad pública del proyecto. Cada modificación del archivo queda registrada en el historial de Git, con su hash, fecha y diff, accesible públicamente.</p>
-  </main>
+  </article>
 </Layout>
+
+<style>
+  h1 { margin-bottom: var(--space-5); }
+  h2 { margin-top: var(--space-6); }
+</style>

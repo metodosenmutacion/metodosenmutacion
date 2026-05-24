@@ -34,8 +34,7 @@ const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
 });
 ---
 <Layout title={`${method.data.titulo} · Métodos en Mutación`}>
-  <main>
-    <h1>{method.data.titulo}</h1>
+  <h1>{method.data.titulo}</h1>
 
     <dl>
       <dt>Autoría</dt>
@@ -80,5 +79,4 @@ const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
         ))}
       </ul>
     </section>
-  </main>
 </Layout>

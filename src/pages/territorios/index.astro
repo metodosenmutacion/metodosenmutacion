@@ -13,8 +13,7 @@ const territoriosData = TERRITORIOS.map(territorio => ({
 }));
 ---
 <Layout title="Territorios · Métodos en Mutación">
-  <main>
-    <h1>Territorios</h1>
+  <h1>Territorios</h1>
     <ul>
       {territoriosData.map(({ nombre, slug, count }) => (
         <li>
@@ -22,5 +21,4 @@ const territoriosData = TERRITORIOS.map(territorio => ({
         </li>
       ))}
     </ul>
-  </main>
 </Layout>

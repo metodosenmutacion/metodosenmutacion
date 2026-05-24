@@ -153,7 +153,6 @@ README: minimalista, coherente con el about público.
 ## 12. Decisiones pendientes / open items
 
 - Nombre final oficial de la plataforma (actualmente "Métodos en Mutación").
-- Sistema visual: tipografía, paleta exacta dentro del B&W declarado, rejilla, espaciado, jerarquía.
 - Servicio de email para verificación de submissions (candidatos: Resend, Postmark, otros con plan free).
 - Librería para la cartografía interactiva.
 - Detalle de la capa editorial (cómo se gestiona internamente la promoción de propuesta a archivo).
@@ -166,3 +165,22 @@ README: minimalista, coherente con el about público.
 - 2026-05-14: .DS_Store añadido al .gitignore. Placeholder "Astro" reemplazado por "Métodos en Mutación · v0.1" como primera prueba viva del pipeline.
 - 2026-05-20: Arquitectura abstracta completa cerrada y consolidada en este documento.
 - 2026-05-21: Primer método añadido al archivo (Método del Agenciamiento Colectivo). Territorio COMÚN creado como 37º del listado cerrado, marcando la singularidad estructural del método fundacional.
+
+## 14. Fase estética — decisiones cerradas
+
+- Tipografía: Sora (Google Fonts, weights 300/400/500/700), aplicada globalmente.
+- Sistema cromático: 7 grupos de territorios + 1 color para referentes externos.
+  · Grupo 1 Diseño/Concepción (LINEUP, SKETCH, CONCEPTO, DISEÑO, IDENTIDAD, ESTETICA, EDITORIAL, FOTOS): ocre #B7791F
+  · Grupo 2 Patronaje/Construcción 2D (PATRONAJE, PLANO, CORTE, BIES, PROTOTIPOS): azul #2C5282
+  · Grupo 3 Materiales/Materia (MATERIALES, HILO, FORRO, FORNITURAS, PUNTO, RELLENO, PARCHE): verde #2F6F4E
+  · Grupo 4 Costura/Ensamblaje (COSTURA, ACABADOS, CODIGOS, PRENDA): naranja quemado #B7350D
+  · Grupo 5 Ajuste/Cuerpo (CUERPO, ARREGLO, AJUSTE, HOLGURA, CEÑIDO, COMODIDAD, PERCHA): morado #553C9A
+  · Grupo 6 Exteriores/Contexto (EXTERIORES, INTEMPERIE, COLOR, TIENDA, PRECIOS): teal #2C7A7B
+  · Grupo 7 COMÚN (meta-territorio singular): gris #6B7280
+  · Referentes externos (no territorio, página agregadora): negro #000000
+- Acentos para hover de enlaces: verde #10B981, amarillo #F59E0B, rosa #EC4899, azul #3B82F6, lila #A855F7. Rotación aleatoria.
+- Navegación superior 6 pestañas: Inicio, Métodos, Galería, Buscar, Subir, Sobre el proyecto.
+- Fondo blanco #FFFFFF, tinta negra #000000.
+- Densidad: márgenes generosos, mucha imagen.
+- Mood: archivo editorial sobrio + tensión moda. Sin transiciones gratuitas.
+- Aclaración usuarios: NO red social. Solo verificación email para subida. Páginas /autores/[nombre]/ planificadas para v0.2 como aggregator de trazabilidad (misma mecánica que /referentes/, sin login ni perfil personalizable).

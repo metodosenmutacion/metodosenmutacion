@@ -10,8 +10,7 @@ const methods = allMethods.sort(
 ---
 <Layout title="Métodos · Métodos en Mutación">
   <h1>Métodos</h1>
-  <main>
-    {methods.length === 0
+  {methods.length === 0
       ? <p>Aún no hay métodos en el archivo.</p>
       : methods.map(method => {
           const slug = method.id.split('/')[0];
@@ -30,5 +29,4 @@ const methods = allMethods.sort(
           );
         })
     }
-  </main>
 </Layout>
