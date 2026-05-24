@@ -195,4 +195,4 @@ Implementado en Mega-Batch 2:
 Implementado en Mega-Batch 3:
 - Ficha reorganizada: columna izquierda = cover + metadata + body; columna derecha = documentación adicional (o placeholder con borde punteado si no hay).
 - Home con overlay de papel vegetal (rgba + trama diagonal) que desaparece en fade al hacer scroll.
-- Cartografía v0.1: grid con leve rotación aleatoria por tarjeta, filtros por las 7 familias de territorio (CSS toggle de clase only-{family}), marca ✦ en métodos que declaran COMÚN.
+- Cartografía v0.1 (rediseño estilo Miro): nodos `.map-node` con posición absoluta determinista (pseudoRandom por slug), imagen con borde coloreado por familia del primer territorio, caption con título y autoría. Líneas SVG de derivación (`.derivation-line`) coloreadas por familia del método origen, visibles solo cuando no hay filtro activo. Hero gris ambient (h1 itálica, var(--ink-soft), tamaño reducido). Overlay papel vegetal al 92% de opacidad. Filtros por las 7 familias vía CSS toggle only-{family} sobre clase `.map-node`.

@@ -13,6 +13,38 @@ function getCover(slug: string, doc: string | undefined): string | null {
   return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
 }
 
+function pseudoRandom(seed: string, min: number, max: number): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const normalized = (Math.abs(hash) % 1000) / 1000;
+  return min + normalized * (max - min);
+}
+
+interface NodePos { x: number; y: number; }
+const nodePositions: Record<string, NodePos> = {};
+methods.forEach(method => {
+  const slug = method.id.split('/')[0];
+  nodePositions[slug] = {
+    x: pseudoRandom(slug + 'x', 2, 85),
+    y: pseudoRandom(slug + 'y', 2, 85),
+  };
+});
+
+interface Edge { from: string; to: string; family: string; }
+const edges: Edge[] = [];
+methods.forEach(method => {
+  const slug = method.id.split('/')[0];
+  const family = territoryFamily(method.data.territorios[0]);
+  method.data.derivado_de.forEach(d => {
+    if (d.tipo === 'interno' && nodePositions[d.slug]) {
+      edges.push({ from: slug, to: d.slug, family });
+    }
+  });
+});
+
 const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'costura', 'ajuste', 'exteriores', 'comun'];
 ---
 
@@ -44,23 +76,41 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
       <p>Aún no hay métodos en el archivo.</p>
     ) : (
       <div class="cartography">
-        {methods.map((method, i) => {
+        <svg class="cartography-lines" xmlns="http://www.w3.org/2000/svg">
+          {edges.map(edge => {
+            const from = nodePositions[edge.from];
+            const to = nodePositions[edge.to];
+            if (!from || !to) return null;
+            return (
+              <line
+                class={`derivation-line family-${edge.family}`}
+                x1={`${from.x}%`}
+                y1={`${from.y}%`}
+                x2={`${to.x}%`}
+                y2={`${to.y}%`}
+              />
+            );
+          })}
+        </svg>
+
+        {methods.map(method => {
           const slug = method.id.split('/')[0];
           const cover = getCover(slug, method.data.documentacion[0]);
           const primaryTerritory = method.data.territorios[0];
           const family = territoryFamily(primaryTerritory);
           const isFundacional = method.data.territorios.includes('COMÚN');
-          const rotation = ((i % 5) - 2) * 0.8;
+          const pos = nodePositions[slug];
           return (
             <a
               href={`/metodos/${slug}/`}
-              class={`method-card territory-${family} ${isFundacional ? 'fundacional' : ''}`}
-              style={`transform: rotate(${rotation}deg);`}
+              class={`map-node territory-${family} ${isFundacional ? 'fundacional' : ''}`}
+              style={`left: ${pos.x}%; top: ${pos.y}%;`}
+              data-family={family}
             >
-              {cover && <img src={cover} alt={method.data.titulo} class="card-cover" />}
-              <div class="card-body">
-                <h2 class="card-title">{method.data.titulo}</h2>
-                <p class="card-meta">{method.data.autoria.join(', ')}</p>
+              {cover && <img src={cover} alt={method.data.titulo} class="node-image" />}
+              <div class="node-caption">
+                <span class="node-title">{method.data.titulo}</span>
+                <span class="node-meta">{method.data.autoria.join(', ')}</span>
               </div>
             </a>
           );
@@ -70,7 +120,7 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
   </section>
 
   <script is:inline>
-    // Overlay papel vegetal: respuesta a scroll, wheel, click y touch
+    // Overlay papel vegetal
     (function () {
       const overlay = document.getElementById('vegetal-overlay');
       if (!overlay) return;
@@ -94,13 +144,11 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
         overlay.style.pointerEvents = 'none';
       }
 
-      // Scroll de página (cuando hay contenido suficiente para scrollear)
       window.addEventListener('scroll', function () {
         if (dismissed) return;
         setProgress(window.scrollY / 400);
       }, { passive: true });
 
-      // Rueda del ratón (funciona aunque la página no pueda scrollear)
       overlay.addEventListener('wheel', function (e) {
         e.preventDefault();
         if (e.deltaY > 0) {
@@ -108,7 +156,6 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
         }
       }, { passive: false });
 
-      // Gesto táctil (móvil)
       let touchStartY = 0;
       overlay.addEventListener('touchstart', function (e) {
         touchStartY = e.touches[0].clientY;
@@ -121,11 +168,10 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
         touchStartY = e.touches[0].clientY;
       }, { passive: true });
 
-      // Clic en cualquier punto del overlay: dismiss instantáneo
       overlay.addEventListener('click', dismiss);
     })();
 
-    // Filtros por familia de territorio
+    // Filtros por familia
     (function () {
       const chips = document.querySelectorAll('.filter-chip');
       const cartography = document.querySelector('.cartography');
