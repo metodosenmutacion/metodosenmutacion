@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const TERRITORIOS = [
+export const TERRITORIOS = [
   'LINEUP', 'PATRONAJE', 'SKETCH', 'CODIGOS', 'PRENDA', 'COLOR', 'MATERIALES',
   'COSTURA', 'ACABADOS', 'EXTERIORES', 'FORRO', 'EDITORIAL', 'HILO', 'FORNITURAS',
   'PUNTO', 'PLANO', 'BIES', 'CORTE', 'RELLENO', 'CONCEPTO', 'DISEÑO', 'FOTOS',

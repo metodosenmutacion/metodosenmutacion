@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { TERRITORIOS } from '../../content.config';
+import { slugify } from '../../lib/slugify';
+
+const allMethods = await getCollection('methods');
+
+const territoriosData = TERRITORIOS.map(territorio => ({
+  nombre: territorio,
+  slug: slugify(territorio),
+  count: allMethods.filter(m => m.data.territorios.includes(territorio)).length,
+}));
+---
+<Layout title="Territorios · Métodos en Mutación">
+  <main>
+    <h1>Territorios</h1>
+    <ul>
+      {territoriosData.map(({ nombre, slug, count }) => (
+        <li>
+          <a href={`/territorios/${slug}/`}>{nombre}</a> ({count})
+        </li>
+      ))}
+    </ul>
+  </main>
+</Layout>

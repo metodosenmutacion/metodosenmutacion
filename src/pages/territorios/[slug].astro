@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { TERRITORIOS } from '../../content.config';
+import { slugify } from '../../lib/slugify';
+
+export async function getStaticPaths() {
+  return TERRITORIOS.map(territorio => ({
+    params: { slug: slugify(territorio) },
+    props: { territorio },
+  }));
+}
+
+const { territorio } = Astro.props;
+
+const allMethods = await getCollection('methods');
+const methods = allMethods
+  .filter(m => m.data.territorios.includes(territorio))
+  .sort((a, b) => b.data.fecha_envio.getTime() - a.data.fecha_envio.getTime());
+---
+<Layout title={`${territorio} · Territorios · Métodos en Mutación`}>
+  <main>
+    <h1>{territorio}</h1>
+    {methods.length === 0
+      ? <p>Ningún método declara este territorio todavía.</p>
+      : <ul>
+          {methods.map(method => {
+            const slug = method.id.split('/')[0];
+            const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+            return (
+              <li>
+                <a href={`/metodos/${slug}/`}>{method.data.titulo}</a>
+                {' — '}{method.data.autoria.join(', ')}
+                {' — '}{fecha}
+              </li>
+            );
+          })}
+        </ul>
+    }
+  </main>
+</Layout>
