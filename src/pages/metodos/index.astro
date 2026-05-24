@@ -1,32 +1,42 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { territoryFamily } from '../../lib/territory-colors';
 
-const allMethods = await getCollection('methods');
+const methods = (await getCollection('methods'))
+  .sort((a, b) => b.data.fecha_envio.valueOf() - a.data.fecha_envio.valueOf());
 
-const methods = allMethods.sort(
-  (a, b) => b.data.fecha_envio.getTime() - a.data.fecha_envio.getTime()
-);
+const images = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png}', { query: '?url', import: 'default', eager: true });
+
+function getCover(slug: string, doc: string | undefined): string | null {
+  if (!doc || !/\.(jpg|jpeg|png)$/i.test(doc)) return null;
+  return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
+}
 ---
+
 <Layout title="Métodos · Métodos en Mutación">
   <h1>Métodos</h1>
-  {methods.length === 0
-      ? <p>Aún no hay métodos en el archivo.</p>
-      : methods.map(method => {
-          const slug = method.id.split('/')[0];
-          const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          });
-          return (
-            <article>
-              <h2><a href={`/metodos/${slug}/`}>{method.data.titulo}</a></h2>
-              <p>Autoría: {method.data.autoria.join(', ')}</p>
-              <p>Territorios: {method.data.territorios.join(', ')}</p>
-              <p>Fecha: {fecha}</p>
-            </article>
-          );
-        })
-    }
+  <p class="measure">Archivo abierto de métodos de creación en moda. {methods.length} {methods.length === 1 ? 'método' : 'métodos'} hasta la fecha.</p>
+
+  {methods.length === 0 ? (
+    <p>Aún no hay métodos en el archivo.</p>
+  ) : (
+    <div class="method-grid">
+      {methods.map(method => {
+        const slug = method.id.split('/')[0];
+        const cover = getCover(slug, method.data.documentacion[0]);
+        const primaryTerritory = method.data.territorios[0];
+        const family = territoryFamily(primaryTerritory);
+        return (
+          <a href={`/metodos/${slug}/`} class={`method-card territory-${family}`}>
+            {cover && <img src={cover} alt={method.data.titulo} class="card-cover" />}
+            <div class="card-body">
+              <h2 class="card-title">{method.data.titulo}</h2>
+              <p class="card-meta">{method.data.autoria.join(', ')}</p>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  )}
 </Layout>

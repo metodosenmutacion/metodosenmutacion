@@ -185,3 +185,9 @@ README: minimalista, coherente con el about público.
 - Densidad: márgenes generosos, mucha imagen.
 - Mood: archivo editorial sobrio + tensión moda. Sin transiciones gratuitas.
 - Aclaración usuarios: NO red social. Solo verificación email para subida. Páginas /autores/[nombre]/ planificadas para v0.2 como aggregator de trazabilidad (misma mecánica que /referentes/, sin login ni perfil personalizable).
+
+Implementado en Mega-Batch 2:
+- Ficha multipanel de método (ficha-grid: docs a la izquierda, meta a la derecha), heading display, chips de territorios enlazados y coloreados.
+- Cards de métodos en /metodos/ y en páginas de territorio: cover image, borde superior coloreado por familia del primer territorio.
+- /territorios/ agrupa los 37 por las 7 familias con chips coloreados y contador de métodos.
+- Mapping territorios → familias vive en src/lib/territory-colors.ts.

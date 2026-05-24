@@ -145,3 +145,201 @@ main { padding: var(--space-5) 0; min-height: 60vh; }
   font-size: var(--text-sm);
   color: var(--ink-soft);
 }
+
+/* Territorios — chips y colores */
+
+.territory-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.territory-diseno { color: var(--color-diseno); }
+.territory-patronaje { color: var(--color-patronaje); }
+.territory-materiales { color: var(--color-materiales); }
+.territory-costura { color: var(--color-costura); }
+.territory-ajuste { color: var(--color-ajuste); }
+.territory-exteriores { color: var(--color-exteriores); }
+.territory-comun { color: var(--color-comun); }
+
+.territories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.territory-count {
+  opacity: 0.6;
+  font-size: 0.85em;
+  margin-left: 4px;
+}
+
+/* Ficha de método — multipanel */
+
+.method-ficha .ficha-header h1 {
+  font-size: var(--text-display);
+  line-height: 1.05;
+  margin-bottom: var(--space-5);
+}
+
+.ficha-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+@media (min-width: 900px) {
+  .ficha-grid {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.ficha-docs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.doc-item {
+  position: relative;
+}
+
+.doc-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.doc-download {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: var(--bg);
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+.doc-pdf {
+  display: inline-block;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.ficha-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.meta-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+.meta-value {
+  font-size: var(--text-base);
+}
+
+.ficha-body {
+  max-width: var(--measure-base);
+}
+
+.ficha-body p {
+  margin-bottom: var(--space-3);
+}
+
+/* Cards de métodos */
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.method-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--border);
+  border-top-width: 3px;
+  background: var(--bg);
+  transition: border-color 80ms ease-out;
+}
+
+.method-card.territory-diseno { border-top-color: var(--color-diseno); }
+.method-card.territory-patronaje { border-top-color: var(--color-patronaje); }
+.method-card.territory-materiales { border-top-color: var(--color-materiales); }
+.method-card.territory-costura { border-top-color: var(--color-costura); }
+.method-card.territory-ajuste { border-top-color: var(--color-ajuste); }
+.method-card.territory-exteriores { border-top-color: var(--color-exteriores); }
+.method-card.territory-comun { border-top-color: var(--color-comun); }
+
+.method-card:hover {
+  border-color: var(--ink);
+}
+
+.card-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: var(--space-3);
+}
+
+.card-title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.card-meta {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Página de territorios — agrupación por familia */
+
+.territory-families {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.family-title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  margin: 0 0 var(--space-3) 0;
+}
+
+/* Heading grande coloreado de territorio detalle */
+
+.territory-heading {
+  font-size: var(--text-display);
+  line-height: 1.05;
+}

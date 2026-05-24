@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { territoryFamily } from '../../lib/territory-colors';
+import { slugify } from '../../lib/slugify';
 
 export async function getStaticPaths() {
   const methods = await getCollection('methods');
@@ -11,72 +13,103 @@ export async function getStaticPaths() {
 }
 
 const { method } = Astro.props;
-const slug = Astro.params.slug;
 const { Content } = await render(method);
 
-// Vite resolves each asset to its content-hashed URL in the build output.
-// query:'?url' + import:'default' is the Vite 4+ pattern for URL-only imports.
-// Files must live in src/ for this to work; public/ would need a plain string path instead.
-const allDocAssets = import.meta.glob<string>(
-  '/src/content/methods/**/*.{jpg,jpeg,png,pdf}',
-  { query: '?url', import: 'default', eager: true }
-);
+const allDocs = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png,pdf}', { query: '?url', import: 'default', eager: true });
 
-const docLinks = method.data.documentacion.map(filename => ({
-  filename,
-  url: allDocAssets[`/src/content/methods/${slug}/${filename}`] ?? null,
-}));
+const methodSlug = method.id.split('/')[0];
 
-const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
+function resolveDoc(filename: string): string {
+  const key = `/src/content/methods/${methodSlug}/${filename}`;
+  return allDocs[key] as string;
+}
+
+function isImage(filename: string): boolean {
+  return /\.(jpg|jpeg|png)$/i.test(filename);
+}
+
+const fechaFormat = method.data.fecha_envio.toLocaleDateString('es-ES', {
+  day: 'numeric', month: 'long', year: 'numeric'
 });
 ---
+
 <Layout title={`${method.data.titulo} · Métodos en Mutación`}>
-  <h1>{method.data.titulo}</h1>
+  <article class="method-ficha">
+    <header class="ficha-header">
+      <h1>{method.data.titulo}</h1>
+    </header>
 
-    <dl>
-      <dt>Autoría</dt>
-      <dd>{method.data.autoria.join(', ')}</dd>
+    <div class="ficha-grid">
+      <div class="ficha-docs">
+        {method.data.documentacion.map(doc => (
+          <div class="doc-item">
+            {isImage(doc) ? (
+              <>
+                <img src={resolveDoc(doc)} alt={doc} />
+                <a href={resolveDoc(doc)} download class="doc-download">Descargar</a>
+              </>
+            ) : (
+              <a href={resolveDoc(doc)} target="_blank" rel="noopener" class="doc-pdf">📄 {doc}</a>
+            )}
+          </div>
+        ))}
+      </div>
 
-      <dt>Territorios</dt>
-      <dd>{method.data.territorios.join(', ')}</dd>
+      <aside class="ficha-meta">
+        <div class="meta-row">
+          <span class="meta-label">Autoría</span>
+          <div class="meta-value">
+            {method.data.autoria.map(a => <div>{a}</div>)}
+          </div>
+        </div>
 
-      <dt>Derivado de</dt>
-      <dd>
-        {method.data.derivado_de.length === 0
-          ? 'Original — sin derivaciones'
-          : method.data.derivado_de.map(item =>
-              item.tipo === 'interno'
-                ? `Método interno: ${item.slug}`
-                : `Referente externo: ${item.nombre}`
-            ).join('; ')
-        }
-      </dd>
+        <div class="meta-row">
+          <span class="meta-label">Territorios</span>
+          <div class="meta-value territories">
+            {method.data.territorios.map(t => {
+              const family = territoryFamily(t);
+              return (
+                <a href={`/territorios/${slugify(t)}/`} class={`territory-chip territory-${family}`}>
+                  {t}
+                </a>
+              );
+            })}
+          </div>
+        </div>
 
-      <dt>Fecha de envío</dt>
-      <dd>{fecha}</dd>
+        <div class="meta-row">
+          <span class="meta-label">Derivado de</span>
+          <div class="meta-value">
+            {method.data.derivado_de.length === 0 ? (
+              <em>Original — sin derivaciones</em>
+            ) : (
+              method.data.derivado_de.map(d =>
+                d.tipo === 'interno' ? (
+                  <div><a href={`/metodos/${d.slug}/`}>{d.slug}</a></div>
+                ) : (
+                  <div><a href={`/referentes/${slugify(d.nombre)}/`}>{d.nombre}</a></div>
+                )
+              )
+            )}
+          </div>
+        </div>
 
-      <dt>Licencia</dt>
-      <dd><a href="/licencia/" class="license-link">{method.data.licencia}</a></dd>
-    </dl>
+        <div class="meta-row">
+          <span class="meta-label">Fecha de envío</span>
+          <span class="meta-value">{fechaFormat}</span>
+        </div>
 
-    <section>
+        <div class="meta-row">
+          <span class="meta-label">Licencia</span>
+          <span class="meta-value">
+            <a href="/licencia/" class="license-link">{method.data.licencia}</a>
+          </span>
+        </div>
+      </aside>
+    </div>
+
+    <section class="ficha-body measure">
       <Content />
     </section>
-
-    <section>
-      <h2>Documentación</h2>
-      <ul>
-        {docLinks.map(({ filename, url }) => (
-          <li>
-            {url
-              ? <a href={url} download={filename}>{filename}</a>
-              : <span>{filename} (no disponible)</span>
-            }
-          </li>
-        ))}
-      </ul>
-    </section>
+  </article>
 </Layout>

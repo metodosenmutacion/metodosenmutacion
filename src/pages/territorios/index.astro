@@ -1,24 +1,44 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
 import { TERRITORIOS } from '../../content.config';
+import { territoryFamily, FAMILY_NAMES, type TerritoryFamily } from '../../lib/territory-colors';
 import { slugify } from '../../lib/slugify';
+import Layout from '../../layouts/Layout.astro';
 
-const allMethods = await getCollection('methods');
+const methods = await getCollection('methods');
 
-const territoriosData = TERRITORIOS.map(territorio => ({
-  nombre: territorio,
-  slug: slugify(territorio),
-  count: allMethods.filter(m => m.data.territorios.includes(territorio)).length,
-}));
+const counts: Record<string, number> = {};
+for (const t of TERRITORIOS) {
+  counts[t] = methods.filter(m => m.data.territorios.includes(t)).length;
+}
+
+const grouped: Record<TerritoryFamily, string[]> = {
+  diseno: [], patronaje: [], materiales: [], costura: [],
+  ajuste: [], exteriores: [], comun: [],
+};
+for (const t of TERRITORIOS) {
+  grouped[territoryFamily(t)].push(t);
+}
+
+const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'costura', 'ajuste', 'exteriores', 'comun'];
 ---
+
 <Layout title="Territorios · Métodos en Mutación">
   <h1>Territorios</h1>
-    <ul>
-      {territoriosData.map(({ nombre, slug, count }) => (
-        <li>
-          <a href={`/territorios/${slug}/`}>{nombre}</a> ({count})
-        </li>
-      ))}
-    </ul>
+  <p class="measure">37 territorios existenciales agrupados en 7 familias. Cada método declara los territorios que toca.</p>
+
+  <div class="territory-families">
+    {familyOrder.map(family => (
+      <section class="family-block">
+        <h2 class={`family-title territory-${family}`}>{FAMILY_NAMES[family]}</h2>
+        <div class="territories">
+          {grouped[family].map(t => (
+            <a href={`/territorios/${slugify(t)}/`} class={`territory-chip territory-${family}`}>
+              {t} <span class="territory-count">{counts[t]}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
 </Layout>

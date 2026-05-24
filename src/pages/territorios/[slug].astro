@@ -1,43 +1,55 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
 import { TERRITORIOS } from '../../content.config';
+import { territoryFamily } from '../../lib/territory-colors';
 import { slugify } from '../../lib/slugify';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
-  return TERRITORIOS.map(territorio => ({
-    params: { slug: slugify(territorio) },
-    props: { territorio },
+  return TERRITORIOS.map(t => ({
+    params: { slug: slugify(t) },
+    props: { name: t },
   }));
 }
 
-const { territorio } = Astro.props;
+const { name } = Astro.props;
+const family = territoryFamily(name);
 
-const allMethods = await getCollection('methods');
-const methods = allMethods
-  .filter(m => m.data.territorios.includes(territorio))
-  .sort((a, b) => b.data.fecha_envio.getTime() - a.data.fecha_envio.getTime());
+const methods = (await getCollection('methods'))
+  .filter(m => m.data.territorios.includes(name))
+  .sort((a, b) => b.data.fecha_envio.valueOf() - a.data.fecha_envio.valueOf());
+
+const images = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png}', { query: '?url', import: 'default', eager: true });
+
+function getCover(slug: string, doc: string | undefined): string | null {
+  if (!doc || !/\.(jpg|jpeg|png)$/i.test(doc)) return null;
+  return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
+}
 ---
-<Layout title={`${territorio} · Territorios · Métodos en Mutación`}>
-  <h1>{territorio}</h1>
-    {methods.length === 0
-      ? <p>Ningún método declara este territorio todavía.</p>
-      : <ul>
-          {methods.map(method => {
-            const slug = method.id.split('/')[0];
-            const fecha = method.data.fecha_envio.toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            });
-            return (
-              <li>
-                <a href={`/metodos/${slug}/`}>{method.data.titulo}</a>
-                {' — '}{method.data.autoria.join(', ')}
-                {' — '}{fecha}
-              </li>
-            );
-          })}
-        </ul>
-    }
+
+<Layout title={`Territorio ${name} · Métodos en Mutación`}>
+  <h1 class={`territory-heading territory-${family}`}>{name}</h1>
+  <p class="measure">{methods.length} {methods.length === 1 ? 'método declara' : 'métodos declaran'} este territorio.</p>
+
+  {methods.length === 0 ? (
+    <p>Aún ningún método declara este territorio.</p>
+  ) : (
+    <div class="method-grid">
+      {methods.map(method => {
+        const slug = method.id.split('/')[0];
+        const cover = getCover(slug, method.data.documentacion[0]);
+        const primaryTerritory = method.data.territorios[0];
+        const cardFamily = territoryFamily(primaryTerritory);
+        return (
+          <a href={`/metodos/${slug}/`} class={`method-card territory-${cardFamily}`}>
+            {cover && <img src={cover} alt={method.data.titulo} class="card-cover" />}
+            <div class="card-body">
+              <h2 class="card-title">{method.data.titulo}</h2>
+              <p class="card-meta">{method.data.autoria.join(', ')}</p>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  )}
 </Layout>
