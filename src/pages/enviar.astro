@@ -1,7 +1,285 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { TERRITORIOS } from '../content.config';
+import { territoryFamily, FAMILY_NAMES, type TerritoryFamily } from '../lib/territory-colors';
+import { getCollection } from 'astro:content';
+
+const existingMethods = (await getCollection('methods')).map(m => ({ id: m.id.split('/')[0], titulo: m.data.titulo }));
+
+const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'costura', 'ajuste', 'exteriores', 'comun'];
+const grouped: Record<TerritoryFamily, string[]> = {
+  diseno: [], patronaje: [], materiales: [], costura: [],
+  ajuste: [], exteriores: [], comun: [],
+};
+for (const t of TERRITORIOS) {
+  grouped[territoryFamily(t)].push(t);
+}
 ---
-<Layout title="Subir · Métodos en Mutación">
-  <h1>Subir</h1>
-  <p class="measure">En construcción — v0.2.</p>
+
+<Layout title="Subir método · Métodos en Mutación">
+  <h1>Subir un método</h1>
+  <p class="measure">Portal interno protegido. Para añadir un método al archivo: completa los campos, sube la documentación, introduce la contraseña de administrador y envía. El método se commiteará al repositorio y aparecerá en la web tras el redeploy automático (~2 minutos).</p>
+
+  <form id="submit-form" class="submit-form">
+    <fieldset>
+      <legend>Datos del método</legend>
+      <label>
+        <span>Título</span>
+        <input type="text" name="titulo" required>
+      </label>
+      <div class="meta-label">Autoría</div>
+      <div id="autoria-list">
+        <div class="autoria-row">
+          <input type="text" name="autoria" required placeholder="Nombre">
+        </div>
+      </div>
+      <button type="button" id="add-autoria" class="link-button">+ Añadir otra autoría</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Territorios (selecciona los que apliquen)</legend>
+      {familyOrder.map(family => (
+        <div class="territory-family-block">
+          <div class={`family-title territory-${family}`}>{FAMILY_NAMES[family]}</div>
+          <div class="territories">
+            {grouped[family].map(t => (
+              <label class={`territory-chip-label territory-${family}`}>
+                <input type="checkbox" name="territorios" value={t}>
+                <span>{t}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+    </fieldset>
+
+    <fieldset>
+      <legend>Derivación</legend>
+      <p class="hint">Por defecto, el método se considera original. Si deriva de otro método del archivo o de un referente externo, añade las derivaciones aquí.</p>
+      <div id="derivado-list"></div>
+      <button type="button" id="add-derivado-interno" class="link-button">+ Derivado de método interno</button>
+      <button type="button" id="add-derivado-externo" class="link-button">+ Derivado de referente externo</button>
+      <script type="application/json" id="methods-data" set:html={JSON.stringify(existingMethods)}></script>
+    </fieldset>
+
+    <fieldset>
+      <legend>Documentación</legend>
+      <p class="hint">JPG, PNG o PDF. Al menos un archivo requerido. El primero será la portada.</p>
+      <input type="file" name="files" accept="image/jpeg,image/png,application/pdf" multiple required>
+      <div id="files-preview"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Cuerpo del método (Markdown)</legend>
+      <textarea name="cuerpo" required rows="14" placeholder="Descripción del método en voz impersonal..."></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Licencia</legend>
+      <label class="checkbox-label">
+        <input type="checkbox" name="acepta_licencia" required>
+        <span>Acepto que este método se distribuirá bajo <a href="/licencia/" class="license-link">CC BY-SA 4.0</a></span>
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Autenticación</legend>
+      <label>
+        <span>Contraseña de administrador</span>
+        <input type="password" name="password" required>
+      </label>
+    </fieldset>
+
+    <button type="submit" id="submit-btn">Subir método</button>
+    <div id="status"></div>
+  </form>
+
+  <style>
+    .submit-form { max-width: 700px; margin: var(--space-5) 0; }
+    .submit-form fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 var(--space-5) 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .submit-form legend {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-soft);
+      margin-bottom: var(--space-2);
+      padding: 0;
+    }
+    .submit-form label { display: flex; flex-direction: column; gap: var(--space-1); }
+    .submit-form label > span { font-size: var(--text-sm); color: var(--ink-soft); }
+    .submit-form input[type="text"],
+    .submit-form input[type="password"],
+    .submit-form textarea {
+      font-family: inherit;
+      font-size: var(--text-base);
+      padding: var(--space-2);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--ink);
+      width: 100%;
+    }
+    .submit-form textarea { resize: vertical; font-family: ui-monospace, monospace; font-size: var(--text-sm); }
+    .autoria-row { display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+    .link-button { background: none; border: none; color: var(--accent-blue); font-family: inherit; font-size: var(--text-sm); cursor: pointer; padding: 0; text-decoration: underline; align-self: flex-start; }
+    .territory-family-block { margin-bottom: var(--space-3); }
+    .territory-family-block .family-title { font-size: var(--text-sm); margin-bottom: var(--space-2); font-weight: var(--weight-medium); }
+    .territory-chip-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: var(--text-xs);
+      cursor: pointer;
+      user-select: none;
+    }
+    .territory-chip-label input { display: none; }
+    .territory-chip-label:has(input:checked) { background: currentColor; }
+    .territory-chip-label:has(input:checked) span { color: var(--bg); }
+    .derivado-row { display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+    .derivado-row select, .derivado-row input { flex: 1; }
+    .derivado-row .remove-btn { background: none; border: 1px solid var(--border); padding: 2px 8px; cursor: pointer; }
+    .checkbox-label { flex-direction: row; align-items: center; gap: var(--space-2); }
+    .hint { font-size: var(--text-sm); color: var(--ink-soft); margin: 0; }
+    #files-preview { font-size: var(--text-sm); color: var(--ink-soft); }
+    #submit-btn {
+      padding: var(--space-3) var(--space-5);
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      font-family: inherit;
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      cursor: pointer;
+      align-self: flex-start;
+    }
+    #submit-btn:disabled { opacity: 0.5; cursor: wait; }
+    #status { margin-top: var(--space-3); padding: var(--space-3); display: none; }
+    #status.error { display: block; border: 1px solid var(--color-costura); color: var(--color-costura); }
+    #status.success { display: block; border: 1px solid var(--color-materiales); color: var(--color-materiales); }
+  </style>
+
+  <script>
+    const form = document.getElementById('submit-form') as HTMLFormElement;
+    const status = document.getElementById('status') as HTMLDivElement;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+    const filesInput = form.querySelector('input[name="files"]') as HTMLInputElement;
+    const filesPreview = document.getElementById('files-preview') as HTMLDivElement;
+    const methodsData = JSON.parse(document.getElementById('methods-data')!.textContent || '[]');
+
+    document.getElementById('add-autoria')!.addEventListener('click', () => {
+      const list = document.getElementById('autoria-list')!;
+      const row = document.createElement('div');
+      row.className = 'autoria-row';
+      row.innerHTML = '<input type="text" name="autoria" placeholder="Nombre"> <button type="button" class="remove-btn">×</button>';
+      row.querySelector('.remove-btn')!.addEventListener('click', () => row.remove());
+      list.appendChild(row);
+    });
+
+    document.getElementById('add-derivado-interno')!.addEventListener('click', () => {
+      const list = document.getElementById('derivado-list')!;
+      const row = document.createElement('div');
+      row.className = 'derivado-row';
+      const options = methodsData.map((m: any) => `<option value="${m.id}">${m.titulo}</option>`).join('');
+      row.innerHTML = `<select data-tipo="interno"><option value="">— elegir método —</option>${options}</select><button type="button" class="remove-btn">×</button>`;
+      row.querySelector('.remove-btn')!.addEventListener('click', () => row.remove());
+      list.appendChild(row);
+    });
+
+    document.getElementById('add-derivado-externo')!.addEventListener('click', () => {
+      const list = document.getElementById('derivado-list')!;
+      const row = document.createElement('div');
+      row.className = 'derivado-row';
+      row.innerHTML = '<input type="text" data-tipo="referente" placeholder="Nombre del referente externo"><button type="button" class="remove-btn">×</button>';
+      row.querySelector('.remove-btn')!.addEventListener('click', () => row.remove());
+      list.appendChild(row);
+    });
+
+    filesInput.addEventListener('change', () => {
+      const files = Array.from(filesInput.files || []);
+      filesPreview.textContent = files.length === 0
+        ? ''
+        : `${files.length} archivo(s): ${files.map(f => f.name).join(', ')}`;
+    });
+
+    function fileToBase64(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      status.className = '';
+      status.style.display = 'none';
+
+      try {
+        const formData = new FormData(form);
+        const titulo = formData.get('titulo') as string;
+        const autoria = formData.getAll('autoria').filter(a => a).map(a => a as string);
+        const territorios = formData.getAll('territorios') as string[];
+        const cuerpo = formData.get('cuerpo') as string;
+        const password = formData.get('password') as string;
+        const files = Array.from(filesInput.files || []);
+
+        if (territorios.length === 0) throw new Error('Selecciona al menos un territorio.');
+        if (files.length === 0) throw new Error('Sube al menos un archivo de documentación.');
+
+        const derivado_de: any[] = [];
+        document.querySelectorAll('.derivado-row').forEach(row => {
+          const select = row.querySelector('select');
+          const input = row.querySelector('input');
+          if (select && select.value) derivado_de.push({ tipo: 'interno', slug: select.value });
+          if (input && input.value) derivado_de.push({ tipo: 'referente', nombre: input.value });
+        });
+
+        const filesData = await Promise.all(files.map(async f => ({
+          filename: f.name,
+          content_base64: await fileToBase64(f),
+        })));
+
+        status.textContent = 'Subiendo... esto puede tardar 20-60 segundos.';
+        status.className = '';
+        status.style.display = 'block';
+
+        const response = await fetch('/api/submit-method', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password, titulo, autoria, territorios, derivado_de, cuerpo,
+            files: filesData,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Error desconocido');
+
+        status.className = 'success';
+        status.innerHTML = `Método subido correctamente. Slug: <strong>${data.slug}</strong>. Netlify redesplegará en ~2 minutos y el método aparecerá en <a href="${data.url}">${data.url}</a>.`;
+        form.reset();
+        filesPreview.textContent = '';
+        document.getElementById('derivado-list')!.innerHTML = '';
+      } catch (err: any) {
+        status.className = 'error';
+        status.textContent = 'Error: ' + err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </Layout>
