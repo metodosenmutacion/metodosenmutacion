@@ -31,6 +31,8 @@ function isImage(filename: string): boolean {
 const fechaFormat = method.data.fecha_envio.toLocaleDateString('es-ES', {
   day: 'numeric', month: 'long', year: 'numeric'
 });
+
+const [coverDoc, ...extraDocs] = method.data.documentacion;
 ---
 
 <Layout title={`${method.data.titulo} · Métodos en Mutación`}>
@@ -40,76 +42,95 @@ const fechaFormat = method.data.fecha_envio.toLocaleDateString('es-ES', {
     </header>
 
     <div class="ficha-grid">
-      <div class="ficha-docs">
-        {method.data.documentacion.map(doc => (
+      <div class="ficha-left">
+        {coverDoc && (
           <div class="doc-item">
-            {isImage(doc) ? (
+            {isImage(coverDoc) ? (
               <>
-                <img src={resolveDoc(doc)} alt={doc} />
-                <a href={resolveDoc(doc)} download class="doc-download">Descargar</a>
+                <img src={resolveDoc(coverDoc)} alt={coverDoc} />
+                <a href={resolveDoc(coverDoc)} download class="doc-download">Descargar</a>
               </>
             ) : (
-              <a href={resolveDoc(doc)} target="_blank" rel="noopener" class="doc-pdf">📄 {doc}</a>
+              <a href={resolveDoc(coverDoc)} target="_blank" rel="noopener" class="doc-pdf">📄 {coverDoc}</a>
             )}
           </div>
-        ))}
+        )}
+
+        <aside class="ficha-meta">
+          <div class="meta-row">
+            <span class="meta-label">Autoría</span>
+            <div class="meta-value">
+              {method.data.autoria.map(a => <div>{a}</div>)}
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Territorios</span>
+            <div class="meta-value territories">
+              {method.data.territorios.map(t => {
+                const family = territoryFamily(t);
+                return (
+                  <a href={`/territorios/${slugify(t)}/`} class={`territory-chip territory-${family}`}>
+                    {t}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Derivado de</span>
+            <div class="meta-value">
+              {method.data.derivado_de.length === 0 ? (
+                <em>Original — sin derivaciones</em>
+              ) : (
+                method.data.derivado_de.map(d =>
+                  d.tipo === 'interno' ? (
+                    <div><a href={`/metodos/${d.slug}/`}>{d.slug}</a></div>
+                  ) : (
+                    <div><a href={`/referentes/${slugify(d.nombre)}/`}>{d.nombre}</a></div>
+                  )
+                )
+              )}
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Fecha de envío</span>
+            <span class="meta-value">{fechaFormat}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">Licencia</span>
+            <span class="meta-value">
+              <a href="/licencia/" class="license-link">{method.data.licencia}</a>
+            </span>
+          </div>
+        </aside>
+
+        <section class="ficha-body">
+          <Content />
+        </section>
       </div>
 
-      <aside class="ficha-meta">
-        <div class="meta-row">
-          <span class="meta-label">Autoría</span>
-          <div class="meta-value">
-            {method.data.autoria.map(a => <div>{a}</div>)}
-          </div>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label">Territorios</span>
-          <div class="meta-value territories">
-            {method.data.territorios.map(t => {
-              const family = territoryFamily(t);
-              return (
-                <a href={`/territorios/${slugify(t)}/`} class={`territory-chip territory-${family}`}>
-                  {t}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label">Derivado de</span>
-          <div class="meta-value">
-            {method.data.derivado_de.length === 0 ? (
-              <em>Original — sin derivaciones</em>
-            ) : (
-              method.data.derivado_de.map(d =>
-                d.tipo === 'interno' ? (
-                  <div><a href={`/metodos/${d.slug}/`}>{d.slug}</a></div>
-                ) : (
-                  <div><a href={`/referentes/${slugify(d.nombre)}/`}>{d.nombre}</a></div>
-                )
-              )
-            )}
-          </div>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label">Fecha de envío</span>
-          <span class="meta-value">{fechaFormat}</span>
-        </div>
-
-        <div class="meta-row">
-          <span class="meta-label">Licencia</span>
-          <span class="meta-value">
-            <a href="/licencia/" class="license-link">{method.data.licencia}</a>
-          </span>
-        </div>
-      </aside>
+      <div class="ficha-right">
+        {extraDocs.length === 0 ? (
+          <p class="docs-empty">Sin documentación adicional. Cualquier nueva imagen o documento que se sume a este método aparecerá en esta columna.</p>
+        ) : (
+          extraDocs.map(doc => (
+            <div class="doc-item">
+              {isImage(doc) ? (
+                <>
+                  <img src={resolveDoc(doc)} alt={doc} />
+                  <a href={resolveDoc(doc)} download class="doc-download">Descargar</a>
+                </>
+              ) : (
+                <a href={resolveDoc(doc)} target="_blank" rel="noopener" class="doc-pdf">📄 {doc}</a>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
-
-    <section class="ficha-body measure">
-      <Content />
-    </section>
   </article>
 </Layout>

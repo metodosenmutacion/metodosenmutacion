@@ -191,3 +191,8 @@ Implementado en Mega-Batch 2:
 - Cards de métodos en /metodos/ y en páginas de territorio: cover image, borde superior coloreado por familia del primer territorio.
 - /territorios/ agrupa los 37 por las 7 familias con chips coloreados y contador de métodos.
 - Mapping territorios → familias vive en src/lib/territory-colors.ts.
+
+Implementado en Mega-Batch 3:
+- Ficha reorganizada: columna izquierda = cover + metadata + body; columna derecha = documentación adicional (o placeholder con borde punteado si no hay).
+- Home con overlay de papel vegetal (rgba + trama diagonal) que desaparece en fade al hacer scroll.
+- Cartografía v0.1: grid con leve rotación aleatoria por tarjeta, filtros por las 7 familias de territorio (CSS toggle de clase only-{family}), marca ✦ en métodos que declaran COMÚN.

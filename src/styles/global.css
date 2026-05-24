@@ -193,15 +193,22 @@ main { padding: var(--space-5) 0; min-height: 60vh; }
   grid-template-columns: 1fr;
   gap: var(--space-5);
   margin-bottom: var(--space-6);
+  align-items: start;
 }
 
 @media (min-width: 900px) {
   .ficha-grid {
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.ficha-docs {
+.ficha-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.ficha-right {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -236,6 +243,15 @@ main { padding: var(--space-5) 0; min-height: 60vh; }
   text-decoration: none;
 }
 
+.docs-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: var(--text-sm);
+  padding: var(--space-3);
+  border: 1px dashed var(--border);
+  margin: 0;
+}
+
 .ficha-meta {
   display: flex;
   flex-direction: column;
@@ -257,10 +273,6 @@ main { padding: var(--space-5) 0; min-height: 60vh; }
 
 .meta-value {
   font-size: var(--text-base);
-}
-
-.ficha-body {
-  max-width: var(--measure-base);
 }
 
 .ficha-body p {
@@ -342,4 +354,146 @@ main { padding: var(--space-5) 0; min-height: 60vh; }
 .territory-heading {
   font-size: var(--text-display);
   line-height: 1.05;
+}
+
+/* Home — hero */
+
+.home-hero {
+  margin-bottom: var(--space-6);
+}
+
+.home-hero h1 {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-3);
+}
+
+/* Filter chips (acción) */
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.filter-chip {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--chip-color, var(--ink));
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--chip-color, var(--ink));
+  background-color: var(--bg);
+  font-family: inherit;
+  transition: background-color 80ms ease-out, color 80ms ease-out;
+}
+
+.filter-chip:hover {
+  background-color: var(--chip-color, var(--ink));
+  color: var(--bg);
+}
+
+.filter-chip.active {
+  background-color: var(--chip-color, var(--ink));
+  color: var(--bg);
+}
+
+/* Cartografía */
+
+.cartography {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-4) 0 var(--space-8) 0;
+}
+
+.cartography .method-card {
+  transition: transform 200ms ease-out, border-color 80ms ease-out;
+}
+
+.cartography .method-card:hover {
+  transform: rotate(0deg) scale(1.02) !important;
+  z-index: 1;
+}
+
+.cartography.only-diseno .method-card:not(.territory-diseno),
+.cartography.only-patronaje .method-card:not(.territory-patronaje),
+.cartography.only-materiales .method-card:not(.territory-materiales),
+.cartography.only-costura .method-card:not(.territory-costura),
+.cartography.only-ajuste .method-card:not(.territory-ajuste),
+.cartography.only-exteriores .method-card:not(.territory-exteriores),
+.cartography.only-comun .method-card:not(.territory-comun) {
+  display: none;
+}
+
+/* Estrella fugaz — método fundacional (declara COMÚN) */
+
+.method-card.fundacional {
+  position: relative;
+}
+
+.method-card.fundacional::before {
+  content: '✦';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* Overlay papel vegetal — home */
+
+#vegetal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(252, 251, 247, 0.97);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.015) 0px,
+    rgba(0, 0, 0, 0.015) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 100ms linear;
+}
+
+.vegetal-content h1 {
+  font-size: var(--text-display);
+  margin-bottom: var(--space-2);
+  line-height: 1.05;
+}
+
+.vegetal-version {
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0 0 var(--space-6) 0;
+}
+
+.vegetal-hint {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  animation: vegetal-pulse 2s ease-in-out infinite;
+  margin: 0;
+}
+
+@keyframes vegetal-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
