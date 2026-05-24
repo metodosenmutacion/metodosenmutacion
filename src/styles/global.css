@@ -96,6 +96,14 @@ a[data-accent="pink"]:hover { color: var(--accent-pink); }
 a[data-accent="blue"]:hover { color: var(--accent-blue); }
 a[data-accent="purple"]:hover { color: var(--accent-purple); }
 
+.license-link {
+  color: var(--accent-pink);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 img { max-width: 100%; height: auto; display: block; }
 ul, ol { margin: 0 0 var(--space-3) 0; padding-left: var(--space-4); }
 

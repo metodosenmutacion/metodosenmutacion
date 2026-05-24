@@ -124,6 +124,7 @@ URLs en castellano. Contenido de cada método en su idioma original (es o cat).
 - /propuestas/ — Cola pública de propuestas pendientes de curación.
 - /enviar/ — Formulario de submission de nuevo método.
 - /sobre-el-proyecto/ — About anonimizado (ver sección 11).
+- /licencia/ — Página dedicada a la explicación de CC BY-SA 4.0. Enlazada desde la metadata de cada método, desde el footer y desde el texto de /sobre-el-proyecto/.
 
 ## 9. Cartografía (home)
 

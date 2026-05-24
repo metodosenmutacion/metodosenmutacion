@@ -36,8 +36,19 @@ const { title = 'Métodos en Mutación' } = Astro.props;
     </main>
     <footer class="site-footer">
       <div class="container">
-        <p>Métodos en Mutación · v0.1 — en mutación · CC BY-SA 4.0</p>
+        <p>Métodos en Mutación · v0.1 — en mutación · <a href="/licencia/" class="license-link">CC BY-SA 4.0</a></p>
       </div>
     </footer>
+    <script is:inline>
+      (function () {
+        const accents = ['green', 'yellow', 'pink', 'blue', 'purple'];
+        document.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('mouseenter', function () {
+            const color = accents[Math.floor(Math.random() * accents.length)];
+            link.setAttribute('data-accent', color);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
