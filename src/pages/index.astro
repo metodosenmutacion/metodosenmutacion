@@ -21,7 +21,7 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
     <div class="vegetal-content">
       <h1>Métodos en Mutación</h1>
       <p class="vegetal-version">v0.1 — en mutación</p>
-      <p class="vegetal-hint">Desliza para entrar al archivo</p>
+      <p class="vegetal-hint">Haz clic, desliza o scroll para entrar</p>
     </div>
   </div>
 
@@ -70,20 +70,59 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
   </section>
 
   <script is:inline>
-    // Overlay papel vegetal: se retira al scroll
+    // Overlay papel vegetal: respuesta a scroll, wheel, click y touch
     (function () {
       const overlay = document.getElementById('vegetal-overlay');
       if (!overlay) return;
-      function update() {
-        const scrolled = window.scrollY;
-        const fadeEnd = 400;
-        let opacity = 1 - scrolled / fadeEnd;
-        opacity = Math.max(0, Math.min(1, opacity));
-        overlay.style.opacity = String(opacity);
-        overlay.style.pointerEvents = opacity < 0.05 ? 'none' : 'auto';
+
+      let progress = 0;
+      let dismissed = false;
+
+      function setProgress(p) {
+        if (dismissed) return;
+        progress = Math.max(0, Math.min(1, p));
+        overlay.style.opacity = String(1 - progress);
+        if (progress >= 0.95) {
+          dismissed = true;
+          overlay.style.pointerEvents = 'none';
+        }
       }
-      window.addEventListener('scroll', update, { passive: true });
-      update();
+
+      function dismiss() {
+        dismissed = true;
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+      }
+
+      // Scroll de página (cuando hay contenido suficiente para scrollear)
+      window.addEventListener('scroll', function () {
+        if (dismissed) return;
+        setProgress(window.scrollY / 400);
+      }, { passive: true });
+
+      // Rueda del ratón (funciona aunque la página no pueda scrollear)
+      overlay.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+          setProgress(progress + 0.08);
+        }
+      }, { passive: false });
+
+      // Gesto táctil (móvil)
+      let touchStartY = 0;
+      overlay.addEventListener('touchstart', function (e) {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      overlay.addEventListener('touchmove', function (e) {
+        const diff = touchStartY - e.touches[0].clientY;
+        if (diff > 0) {
+          setProgress(progress + diff * 0.004);
+        }
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      // Clic en cualquier punto del overlay: dismiss instantáneo
+      overlay.addEventListener('click', dismiss);
     })();
 
     // Filtros por familia de territorio
