@@ -1,10 +1,11 @@
 import type { Handler } from '@netlify/functions';
-import { getStore } from '@netlify/blobs';
+import { connectLambda, getStore } from '@netlify/blobs';
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD!;
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
+  connectLambda(event);
   try {
     const body = JSON.parse(event.body || '{}');
     if (body.password !== ADMIN_PASSWORD) {
