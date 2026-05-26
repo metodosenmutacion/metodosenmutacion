@@ -19,10 +19,10 @@ const methods = (await getCollection('methods'))
   .filter(m => m.data.territorios.includes(name))
   .sort((a, b) => b.data.fecha_envio.valueOf() - a.data.fecha_envio.valueOf());
 
-const images = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png}', { query: '?url', import: 'default', eager: true });
+const images = import.meta.glob('/src/content/methods/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP}', { query: '?url', import: 'default', eager: true });
 
 function getCover(slug: string, doc: string | undefined): string | null {
-  if (!doc || !/\.(jpg|jpeg|png)$/i.test(doc)) return null;
+  if (!doc || !/\.(jpg|jpeg|png|webp)$/i.test(doc)) return null;
   return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
 }
 ---

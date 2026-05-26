@@ -6,32 +6,29 @@ import { territoryFamily, FAMILY_NAMES, type TerritoryFamily } from '../lib/terr
 const methods = (await getCollection('methods'))
   .sort((a, b) => b.data.fecha_envio.valueOf() - a.data.fecha_envio.valueOf());
 
-const images = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png}', { query: '?url', import: 'default', eager: true });
+const images = import.meta.glob('/src/content/methods/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP}', { query: '?url', import: 'default', eager: true });
 
 function getCover(slug: string, doc: string | undefined): string | null {
-  if (!doc || !/\.(jpg|jpeg|png)$/i.test(doc)) return null;
+  if (!doc || !/\.(jpg|jpeg|png|webp)$/i.test(doc)) return null;
   return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
 }
 
-function pseudoRandom(seed: string, min: number, max: number): number {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-    hash |= 0;
+const positions = methods.map((m, i) => {
+  if (m.data.territorios.includes('COMÚN')) {
+    return { top: 40, left: 42, rotation: -2 };
   }
-  const normalized = (Math.abs(hash) % 1000) / 1000;
-  return min + normalized * (max - min);
-}
-
-interface NodePos { x: number; y: number; }
-const nodePositions: Record<string, NodePos> = {};
-methods.forEach(method => {
-  const slug = method.id.split('/')[0];
-  nodePositions[slug] = {
-    x: pseudoRandom(slug + 'x', 2, 85),
-    y: pseudoRandom(slug + 'y', 2, 85),
+  const seed = i + 1;
+  const x = (seed * 0.6180339887 + 0.31) % 1;
+  const y = (seed * 0.3819660113 + 0.71) % 1;
+  return {
+    top: 4 + y * 82,
+    left: 3 + x * 88,
+    rotation: (((seed * 7) % 11) / 11 - 0.5) * 6,
   };
 });
+
+const slugIndex: Record<string, number> = {};
+methods.forEach((m, i) => { slugIndex[m.id.split('/')[0]] = i; });
 
 interface Edge { from: string; to: string; family: string; }
 const edges: Edge[] = [];
@@ -39,7 +36,7 @@ methods.forEach(method => {
   const slug = method.id.split('/')[0];
   const family = territoryFamily(method.data.territorios[0]);
   method.data.derivado_de.forEach(d => {
-    if (d.tipo === 'interno' && nodePositions[d.slug]) {
+    if (d.tipo === 'interno' && slugIndex[d.slug] !== undefined) {
       edges.push({ from: slug, to: d.slug, family });
     }
   });
@@ -78,33 +75,33 @@ const familyOrder: TerritoryFamily[] = ['diseno', 'patronaje', 'materiales', 'co
       <div class="cartography">
         <svg class="cartography-lines" xmlns="http://www.w3.org/2000/svg">
           {edges.map(edge => {
-            const from = nodePositions[edge.from];
-            const to = nodePositions[edge.to];
-            if (!from || !to) return null;
+            const fromPos = positions[slugIndex[edge.from]];
+            const toPos = positions[slugIndex[edge.to]];
+            if (!fromPos || !toPos) return null;
             return (
               <line
                 class={`derivation-line family-${edge.family}`}
-                x1={`${from.x}%`}
-                y1={`${from.y}%`}
-                x2={`${to.x}%`}
-                y2={`${to.y}%`}
+                x1={`${fromPos.left}%`}
+                y1={`${fromPos.top}%`}
+                x2={`${toPos.left}%`}
+                y2={`${toPos.top}%`}
               />
             );
           })}
         </svg>
 
-        {methods.map(method => {
+        {methods.map((method, i) => {
           const slug = method.id.split('/')[0];
           const cover = getCover(slug, method.data.documentacion[0]);
           const primaryTerritory = method.data.territorios[0];
           const family = territoryFamily(primaryTerritory);
           const isFundacional = method.data.territorios.includes('COMÚN');
-          const pos = nodePositions[slug];
+          const pos = positions[i];
           return (
             <a
               href={`/metodos/${slug}/`}
               class={`map-node territory-${family} ${isFundacional ? 'fundacional' : ''}`}
-              style={`left: ${pos.x}%; top: ${pos.y}%;`}
+              style={`left: ${pos.left}%; top: ${pos.top}%; transform: rotate(${pos.rotation}deg);`}
               data-family={family}
             >
               {cover && <img src={cover} alt={method.data.titulo} class="node-image" />}

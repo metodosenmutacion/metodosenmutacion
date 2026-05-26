@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 const { method } = Astro.props;
 const { Content } = await render(method);
 
-const allDocs = import.meta.glob('/src/content/methods/**/*.{jpg,jpeg,png,pdf}', { query: '?url', import: 'default', eager: true });
+const allDocs = import.meta.glob('/src/content/methods/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,pdf,PDF,webp,WEBP}', { query: '?url', import: 'default', eager: true });
 
 const methodSlug = method.id.split('/')[0];
 
@@ -25,7 +25,7 @@ function resolveDoc(filename: string): string {
 }
 
 function isImage(filename: string): boolean {
-  return /\.(jpg|jpeg|png)$/i.test(filename);
+  return /\.(jpg|jpeg|png|webp)$/i.test(filename);
 }
 
 const fechaFormat = method.data.fecha_envio.toLocaleDateString('es-ES', {

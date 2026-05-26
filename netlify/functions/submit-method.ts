@@ -6,6 +6,14 @@ const REPO_OWNER = 'metodosenmutacion';
 const REPO_NAME = 'metodosenmutacion';
 const BRANCH = 'main';
 
+function sanitizeFilename(name: string): string {
+  const lastDot = name.lastIndexOf('.');
+  if (lastDot < 0) return name;
+  const base = name.slice(0, lastDot);
+  const ext = name.slice(lastDot).toLowerCase();
+  return base + ext;
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -58,6 +66,7 @@ export const handler: Handler = async (event) => {
     if (!slug) {
       return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'El título no genera un slug válido' }) };
     }
+    const sanitizedFiles = files.map((f: any) => ({ filename: sanitizeFilename(f.filename), sha: f.sha }));
     const today = new Date().toISOString().split('T')[0];
     const derivadoLines = (Array.isArray(derivado_de) && derivado_de.length > 0)
       ? derivado_de.map((d: any) => d.tipo === 'interno'
@@ -75,7 +84,7 @@ derivado_de:${derivadoLines ? '\n' + derivadoLines : ' []'}
 fecha_envio: ${today}
 licencia: "CC BY-SA 4.0"
 documentacion:
-${files.map((f: any) => `  - ${JSON.stringify(f.filename)}`).join('\n')}
+${sanitizedFiles.map((f: any) => `  - ${JSON.stringify(f.filename)}`).join('\n')}
 ---
 
 ${cuerpo}
@@ -91,7 +100,7 @@ ${cuerpo}
     const basePath = `src/content/methods/${slug}`;
     const treeEntries: any[] = [
       { path: `${basePath}/method.md`, mode: '100644', type: 'blob', sha: methodBlob.sha },
-      ...files.map((f: any) => ({ path: `${basePath}/${f.filename}`, mode: '100644', type: 'blob', sha: f.sha })),
+      ...sanitizedFiles.map((f: any) => ({ path: `${basePath}/${f.filename}`, mode: '100644', type: 'blob', sha: f.sha })),
     ];
     const newTree = await githubFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/git/trees`, {
       method: 'POST',
