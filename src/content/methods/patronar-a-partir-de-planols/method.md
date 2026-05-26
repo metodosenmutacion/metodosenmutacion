@@ -1,15 +1,20 @@
 ---
 titulo: "Patronar a partir de plànols"
 autoria:
-  - "Martina Monedero "
+  - "Pau Rubio "
 territorios:
   - "PATRONAJE"
-derivado_de: []
+derivado_de:
+  - tipo: "interno"
+    slug: "dcsg01tco5dissenyar-en-pla-unint-les-peces-per-els-hombros-laterals-amb-altres-de-dissenys-diferents-2d-a-3d-dissenyar-en-pla-i-passar-a-volum"
+  - tipo: "interno"
+    slug: "patronar-a-partir-de-planols"
 fecha_envio: 2026-05-26
 licencia: "CC BY-SA 4.0"
 documentacion:
-  - "Captura de pantalla 2026-05-26 a las 23.40.58.png"
-  - "Patronar a partir de plànols.pdf"
+  - "unint patrons fins fer un planol .pdf"
+  - "Captura de pantalla 2026-05-26 a las 23.41.18.png"
+  - "Captura de pantalla 2026-05-27 a las 0.08.05.png"
 ---
 
-Kairozu fa una radiografia de la ciutat, s'apropa i s'allunya d'un edifici per veure els recorreguts que fa aquest. A partir de la idea de fer una radiografia, aquest mètode vol adaptar els plànols dels edificis per formar les peces. Agafant diferents edificis de Barcelona, els quals tenen formes geomètriques, extrec el plànol de l'edifici, l'amplio per passar-lo a tela i extreure les formes per a les peces. Provar-ho amb diferents teixits per veure com s'adapten al cos.» 
+de la hibridació del mètode DCSG01TCO5 i Patronar a partir de plànols, surt l'experiment de crear un patró que tingui la forma del plànol d'un edifici fent servir recorreguts i parts de patrons de diferents peces.
