@@ -202,6 +202,11 @@ Implementado en Mega-Batch 4:
 - netlify.toml creado en la raíz con publish=dist, command=npm run build, functions=netlify/functions, y redirect /api/* → /.netlify/functions/:splat.
 - Portal v0.1.2 — uploads adaptativos: archivos pequeños (<4MB base64) van single-shot vía /api/upload-blob. Archivos grandes se parten en trozos de 4MB y van vía /api/upload-chunk (almacenamiento temporal en Netlify Blobs), luego /api/finalize-chunks ensambla y crea el blob de GitHub. Límite práctico ~30-50MB por archivo (limitado por timeout de 10s en Functions, no por payload). Soporta múltiples archivos por método sin restricción.
 
+Implementado en v0.1.4:
+- Portada inteligente: en todos los contextos (ficha, cards de /metodos/, cards de /territorios/, nodos de cartografía), la imagen de portada se selecciona como la primera entrada de documentacion cuya extensión coincida con /\.(jpg|jpeg|png|webp)$/i, no como [0] literal. Evita portadas rotas cuando el PDF se subió antes que la captura.
+- En la ficha [slug].astro: coverFile/coverUrl/otherDocs reemplazan el destructuring [coverDoc, ...extraDocs]. El panel derecho usa otherDocs (todos los docs excepto el elegido como portada).
+- Cartografía v0.1.4: mulberry32 PRNG para distribución 2D verdaderamente aleatoria en lugar de Weyl con proporción áurea (que producía diagonales visibles). Cada nodo usa una semilla determinista derivada de su índice × 12347.
+
 Implementado en v0.1.3:
 - Matching de imágenes ampliado a extensiones case-insensitive: jpg/JPG/jpeg/JPEG/png/PNG/webp/WEBP/pdf/PDF en todos los globs de Astro. La función isImage también incluye webp. Evita que archivos con extensión en mayúscula queden invisibles.
 - sanitizeFilename en submit-method.ts: normaliza la extensión a minúscula antes de escribir el frontmatter y el tree entry en GitHub. Evita mismatch entre el nombre almacenado en el .md y el archivo real en el repo.

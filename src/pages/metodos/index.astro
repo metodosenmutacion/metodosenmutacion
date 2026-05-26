@@ -8,9 +8,11 @@ const methods = (await getCollection('methods'))
 
 const images = import.meta.glob('/src/content/methods/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP}', { query: '?url', import: 'default', eager: true });
 
-function getCover(slug: string, doc: string | undefined): string | null {
-  if (!doc || !/\.(jpg|jpeg|png|webp)$/i.test(doc)) return null;
-  return (images[`/src/content/methods/${slug}/${doc}`] as string) ?? null;
+function getCover(slug: string, docs: string[] | undefined): string | null {
+  if (!docs || docs.length === 0) return null;
+  const firstImage = docs.find(d => /\.(jpg|jpeg|png|webp)$/i.test(d));
+  if (!firstImage) return null;
+  return (images[`/src/content/methods/${slug}/${firstImage}`] as string) ?? null;
 }
 ---
 
@@ -24,7 +26,7 @@ function getCover(slug: string, doc: string | undefined): string | null {
     <div class="method-grid">
       {methods.map(method => {
         const slug = method.id.split('/')[0];
-        const cover = getCover(slug, method.data.documentacion[0]);
+        const cover = getCover(slug, method.data.documentacion);
         const primaryTerritory = method.data.territorios[0];
         const family = territoryFamily(primaryTerritory);
         return (

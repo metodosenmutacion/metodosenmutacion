@@ -32,7 +32,10 @@ const fechaFormat = method.data.fecha_envio.toLocaleDateString('es-ES', {
   day: 'numeric', month: 'long', year: 'numeric'
 });
 
-const [coverDoc, ...extraDocs] = method.data.documentacion;
+const documentacion = method.data.documentacion ?? [];
+const coverFile = documentacion.find(d => /\.(jpg|jpeg|png|webp)$/i.test(d));
+const coverUrl = coverFile ? (allDocs[`/src/content/methods/${methodSlug}/${coverFile}`] as string) : null;
+const otherDocs = coverFile ? documentacion.filter(d => d !== coverFile) : documentacion;
 ---
 
 <Layout title={`${method.data.titulo} · Métodos en Mutación`}>
@@ -43,16 +46,10 @@ const [coverDoc, ...extraDocs] = method.data.documentacion;
 
     <div class="ficha-grid">
       <div class="ficha-left">
-        {coverDoc && (
+        {coverUrl && (
           <div class="doc-item">
-            {isImage(coverDoc) ? (
-              <>
-                <img src={resolveDoc(coverDoc)} alt={coverDoc} />
-                <a href={resolveDoc(coverDoc)} download class="doc-download">Descargar</a>
-              </>
-            ) : (
-              <a href={resolveDoc(coverDoc)} target="_blank" rel="noopener" class="doc-pdf">📄 {coverDoc}</a>
-            )}
+            <img src={coverUrl} alt={coverFile ?? ''} />
+            <a href={coverUrl} download class="doc-download">Descargar</a>
           </div>
         )}
 
@@ -114,10 +111,10 @@ const [coverDoc, ...extraDocs] = method.data.documentacion;
       </div>
 
       <div class="ficha-right">
-        {extraDocs.length === 0 ? (
+        {otherDocs.length === 0 ? (
           <p class="docs-empty">Sin documentación adicional. Cualquier nueva imagen o documento que se sume a este método aparecerá en esta columna.</p>
         ) : (
-          extraDocs.map(doc => (
+          otherDocs.map(doc => (
             <div class="doc-item">
               {isImage(doc) ? (
                 <>
