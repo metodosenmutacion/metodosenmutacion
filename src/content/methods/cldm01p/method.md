@@ -5,7 +5,7 @@ autoria:
 territorios:
   - "CONCEPTO"
   - "PATRONAJE"
-  - "CUERPO"
+  - "CODIGOS"
 derivado_de: []
 fecha_envio: 2026-06-16
 licencia: "CC BY-SA 4.0"
